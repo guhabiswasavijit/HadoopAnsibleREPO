@@ -1,0 +1,75 @@
+- hosts: localhost
+  connection: local
+  tasks:
+  - name: CreateHiveMetaServer
+    lxd_container:
+      name: hiveMetaServer
+      state: started
+      source:
+        type: image
+        mode: pull
+        server: https://images.linuxcontainers.org
+        protocol: lxd
+        alias: ubuntu/focal/amd64
+      profiles: ["default"]
+      wait_for_ipv4_addresses: true
+      timeout: 600
+  - name: CreateNameNode
+    lxd_container:
+      name: namenode
+      state: started
+      source:
+        type: image
+        mode: pull
+        server: https://images.linuxcontainers.org
+        protocol: lxd
+        alias: ubuntu/focal/amd64
+      profiles: ["default"]
+      wait_for_ipv4_addresses: true
+      timeout: 600
+  - name: CreateSecondaryNamenode
+    lxd_container:
+       name: secondaryNamenode
+       state: started
+       source:
+         type: image
+         mode: pull
+         server: https://images.linuxcontainers.org
+         protocol: lxd
+         alias: ubuntu/focal/amd64
+       profiles: ["default"]
+       wait_for_ipv4_addresses: true
+       timeout: 600
+  - name: CreateDatanode
+    lxd_container:
+      name: datanode
+      state: started
+      source:
+        type: image
+        mode: pull
+        server: https://images.linuxcontainers.org
+        protocol: lxd
+        alias: ubuntu/focal/amd64
+      profiles: ["default"]
+      wait_for_ipv4_addresses: true
+      timeout: 600
+  - name: ConfigureNameNode
+    delegate_to: namenode
+    remote_user: root
+    vars_files:
+    - vars/user.yml
+    - vars/var_basic.yml
+    - vars/var_master.yml
+    vars:
+      add_user: true
+      generate_key: true
+      open_firewall: true
+      disable_firewall: false
+      install_hadoop: true
+      config_hadoop: true
+    roles:
+      - user
+      - fetch_public_key
+      - authorized
+      - java
+      - hadoop

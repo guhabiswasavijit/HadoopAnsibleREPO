@@ -1,0 +1,7 @@
+[master]
+namenode
+[workers]
+secondarynamenode
+datanode
+[hive]
+hiveserver
